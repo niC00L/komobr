@@ -26,10 +26,10 @@ function filter(keyword) {
 	$.getJSON('data.json', function(images){
 		$.each(images, function(i, image) {
 			if (keyword == "") {
-				$("#komobr").append("<img src='images/" + image.name + "'/>");
+				$("#komobr").append("<img src='images/" + image.id + image.extension + "'/>");
 			}
 			else if($.inArray(keyword, image.tags) != -1) {
-				$("#komobr").append("<img src='images/" + image.name + "'/>");
+				$("#komobr").append("<img src='images/" + image.id + image.extension + "'/>");
 			}
 		});
 	});

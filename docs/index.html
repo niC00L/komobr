@@ -8,8 +8,42 @@
   <meta name="description" content="Komentovacie obrazky">
   <meta name="author" content="niC00L">
 
+  <script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
 </head>
 <body>
 	<h1>KomObr</h1>
+	<form id="target" action="destination.html">
+		<input type="text" value="">
+		<input type="submit" value="Filter	">
+	</form>
+	<div id="komobr">
+		
+	</div>
 </body>
+<script>
+function filter(keyword) {
+	$("#komobr").empty();	
+	$.getJSON('data.json', function(images){
+		$.each(images, function(i, image) {
+			if (keyword == "") {
+				$("#komobr").append("<img src='images/" + image.name + "'/>");
+			}
+			else if($.inArray(keyword, image.tags) != -1) {
+				$("#komobr").append("<img src='images/" + image.name + "'/>");
+			}
+		});
+	});
+}
+
+filter("");
+
+$(document).ready(function() {
+	$( "#target" ).submit(function( event ) {
+		keyword = $("input:first").val()
+		event.preventDefault();
+		filter(keyword);
+	});
+
+});
+</script>
 </html>

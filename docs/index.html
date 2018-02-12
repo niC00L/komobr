@@ -24,7 +24,7 @@
 function filter(keyword) {
 	$("#komobr").empty();	
 	$.getJSON('data.json', function(images){
-		$.each(images, function(i, image) {
+		$.each(images.images, function(i, image) {
 			if (keyword == "") {
 				$("#komobr").append("<img src='images/" + image.id + image.extension + "'/>");
 			}

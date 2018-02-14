@@ -35,7 +35,7 @@ app.get('/process_get', function (req, res) {
 // storage used with Multer library to define where to save files on server, and how to save filename
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, './uploads')
+        cb(null, './docs/images')
     },
     filename: function (req, file, cb) {
         cb(null, json.count + getExtension(file));
@@ -53,10 +53,9 @@ function getExtension(file) {
 
 var upload = multer({
     storage: storage,
-    // limits: { fileSize: 1048576, files: 1 } // limit file size to 1048576 bytes or 1 MB
-    //,fileFilter: // TODO limit types of files. currently can upload a .txt or any kind of file into uploads folder
 }).fields([ // fields to accept multiple types of uploads
     {name: "fileName", maxCount: 1} // in <input name='fileName' />
+    // {tags: "tags"}
 ]);
 
 app.post('/uploads', function (req, res, next) {
@@ -86,11 +85,19 @@ app.post('/uploads', function (req, res, next) {
 
             if (prog.files.fileName) { // fileName comes from input element:   <input type="file" name="fileName">
                 res.writeHead(200, {'Content-Type': 'text/html'});
-                var reqJSON = JSON.stringify(prog.files.fileName, null, 2); // pretty print the JSON for <pre> tag
-
-                res.write("<h1>Uploaded from file</h2><img style='max-width:20%' src='" + prog.files.fileName[0].path + "'/><pre>" + reqJSON + "</pre><a href='/'>Go back</a>");
+                var filename = prog.files.fileName[0].filename.split(".");
+                var newVal = {
+                    "id": filename[0],
+                    "extension": "." + filename[1],
+                    "tags": prog.body.tags.split(",")
+                };
+                res.write("<h1>Uploaded from file</h2><img style='max-width:20%' src='"
+                    + prog.files.fileName[0].path + "'/><pre>"
+                    + JSON.stringify(newVal, null, 2)
+                    + "</pre><a href='/uploads'>Another</a>");
                 res.end();
                 json.count++;
+                json.images.push(newVal);
                 updateJson(json, json_path);
             }
             else if (prog.body.imageUrl) {

@@ -23,14 +23,10 @@ app.get('/docs/', function (req, res) {
     res.sendFile(__dirname + "/" + "docs/index.html");
 });
 
-app.get('/process_get', function (req, res) {
-    // Prepare output in JSON format
-    response = {
-        tags: req.query.tags.split(",")
-    };
-    res.end(JSON.stringify(response));
-});
 
+////////////////
+//// UPLOAD ////
+////////////////
 
 // storage used with Multer library to define where to save files on server, and how to save filename
 var storage = multer.diskStorage({
@@ -57,6 +53,10 @@ var upload = multer({
     {name: "fileName", maxCount: 1} // in <input name='fileName' />
     // {tags: "tags"}
 ]);
+
+app.get('/uploads', function (req, res) {
+    res.sendFile(__dirname + "/" + "uploads.html");
+});
 
 app.post('/uploads', function (req, res, next) {
 
@@ -91,7 +91,7 @@ app.post('/uploads', function (req, res, next) {
                     "extension": "." + filename[1],
                     "tags": prog.body.tags.split(",")
                 };
-                res.write("<h1>Uploaded from file</h2><img style='max-width:20%' src='"
+                res.write("<h1>Uploaded from file</h1><img style='max-width:20%' src='"
                     + prog.files.fileName[0].path + "'/><pre>"
                     + JSON.stringify(newVal, null, 2)
                     + "</pre><a href='/uploads'>Another</a>");
@@ -128,6 +128,32 @@ app.post('/uploads', function (req, res, next) {
             }
         }
     });
+});
+
+
+//////////////
+//// EDIT ////
+//////////////
+
+app.get('/manage', function (req, res) {
+    // Prepare output in JSON format
+    // res.sendFile(__dirname + "/" + "manage.html");
+    res.writeHead(200, {'Content-Type': 'text/html'});
+    res.write("<h1>Manage</h1>");
+    // console.log(json.images);
+    json.images.forEach(function (item) {
+        console.log(item);
+        res.write("<div id='" + item.id + "'>");
+        res.write("<img src='/docs/images/" + item.id + item.extension + "'/>");
+        res.write("<input type='tags' name='" + item.id + "' value='" + item.tags + "' />");
+        res.write("</div>");
+    });
+    res.write("<link rel='stylesheet' href='/node_modules/tags-input/tags-input.css'>" +
+        "<script src='https://code.jquery.com/jquery-3.3.1.min.js'></script>" +
+        "<script src='node_modules/tags-input/tags-input.js'></script>");
+    res.write("<script>[].forEach.call(document.querySelectorAll('input[type=tags]'), tagsInput);</script>");
+    res.end();
+    // res.end(JSON.stringify(response));
 });
 
 

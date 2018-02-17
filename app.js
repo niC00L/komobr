@@ -1,5 +1,6 @@
 var express = require('express');
 var app = express();
+app.set("view engine", "ejs");
 var fs = require('fs');
 
 var bodyParser = require('body-parser');
@@ -14,6 +15,7 @@ var json = readJson(json_path);
 
 app.use(express.static('.'));
 app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
 
 app.listen(5000, function () {
     console.log('listening on port 5000');
@@ -135,27 +137,23 @@ app.post('/uploads', function (req, res, next) {
 //// EDIT ////
 //////////////
 
-app.get('/manage', function (req, res) {
-    // Prepare output in JSON format
-    // res.sendFile(__dirname + "/" + "manage.html");
-    res.writeHead(200, {'Content-Type': 'text/html'});
-    res.write("<h1>Manage</h1>");
-    // console.log(json.images);
-    json.images.forEach(function (item) {
-        console.log(item);
-        res.write("<div id='" + item.id + "'>");
-        res.write("<img src='/docs/images/" + item.id + item.extension + "'/>");
-        res.write("<input type='tags' name='" + item.id + "' value='" + item.tags + "' />");
-        res.write("</div>");
-    });
-    res.write("<link rel='stylesheet' href='/node_modules/tags-input/tags-input.css'>" +
-        "<script src='https://code.jquery.com/jquery-3.3.1.min.js'></script>" +
-        "<script src='node_modules/tags-input/tags-input.js'></script>");
-    res.write("<script>[].forEach.call(document.querySelectorAll('input[type=tags]'), tagsInput);</script>");
-    res.end();
-    // res.end(JSON.stringify(response));
+app.get('/edit', function (req, res) {
+    var images = json.images;
+    res.render("edit", {images: images});
 });
 
+app.post('/edit', function(req, res){
+    var updated = req.body;
+    var images = json.images;
+    for (img in updated) {
+        var id = parseInt(img);
+        var tags = updated[img].split(",");
+        images[id].tags = tags;
+    }
+    json.images = images;
+    updateJson(json, json_path);
+    res.render("edit", {images: images});
+});
 
 function readJson(path) {
     var rawdata = fs.readFileSync(path);

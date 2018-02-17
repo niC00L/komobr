@@ -1,0 +1,27 @@
+<html>
+<head>
+    <link rel="stylesheet" href="../node_modules/tags-input/tags-input.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="../node_modules/tags-input/tags-input.js"></script>
+
+    <title>File Uploading Form</title>
+</head>
+
+<body>
+<h3>File Upload:</h3>
+Select a file to upload: <br/>
+
+<form action="http://127.0.0.1:5000/uploads" method="POST"
+      enctype="multipart/form-data">
+    <input type="file" name="fileName"/>
+    <br/>
+    <input name="tags" type="tags" placeholder="tags" id="tags"/>
+    <br/>
+    <input type="submit" value="Upload File"/>
+</form>
+
+<script>
+    [].forEach.call(document.querySelectorAll('input[type="tags"]'), tagsInput);
+</script>
+</body>
+</html>

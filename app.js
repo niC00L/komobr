@@ -56,11 +56,11 @@ var upload = multer({
     // {tags: "tags"}
 ]);
 
-app.get('/uploads', function (req, res) {
-    res.sendFile(__dirname + "/" + "uploads.html");
+app.get('/upload', function (req, res) {
+    res.render("upload");
 });
 
-app.post('/uploads', function (req, res, next) {
+app.post('/upload', function (req, res, next) {
 
     var prog = progress({time: 100}, function (progress) { // time:100 means will check progress every 100 ms, say to update progress bar
         // NOTE may need to increase accepted file size to see any kind of progress, might be too fast
@@ -96,7 +96,7 @@ app.post('/uploads', function (req, res, next) {
                 res.write("<h1>Uploaded from file</h1><img style='max-width:20%' src='"
                     + prog.files.fileName[0].path + "'/><pre>"
                     + JSON.stringify(newVal, null, 2)
-                    + "</pre><a href='/uploads'>Another</a>");
+                    + "</pre><a href='/upload'>Another</a>");
                 res.end();
                 json.count++;
                 json.images.push(newVal);

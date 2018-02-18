@@ -1,31 +1,24 @@
-<html lang="en">
+<html>
 <head>
-    <link rel="stylesheet" href="../node_modules/tags-input/tags-input.css">
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <script src="../node_modules/tags-input/tags-input.js"></script>
+    <%- include parts/head.ejs %>
+    <title>File Editing</title>
 </head>
-<body class="container">
-<main>
-    <div class="jumbotron">
-        <h1>This is great</h1>
-        <p>Welcome to templating using EJS</p>
 
-        <form action="http://127.0.0.1:5000/test" method="POST">
-            <div>
-                <input type="submit" value="Edit"/>
-            </div>
-            <% images.forEach(function(image) { %>
-            <div>
-                <img src="/docs/images/<%= image.id + image.extension %>"/>
-                <input name="<%=image.id%>" type="tags" id="<%=image.id%>" value="<%= image.tags %>"/>
-            </div>
-            <% }); %>
-        </form>
+<body>
+<h1>File Editor:</h1>
 
+<form action="http://127.0.0.1:5000/edit" method="POST">
+    <div>
+        <input type="submit" value="Edit"/>
     </div>
-</main>
-<script>
-    [].forEach.call(document.querySelectorAll('input[type="tags"]'), tagsInput);
-</script>
+    <% images.forEach(function(image) { %>
+    <div>
+        <img src="/docs/images/<%= image.id + image.extension %>"/>
+        <input name="<%= image.id %>" type="tags" id="<%= image.id %>" value="<%= image.tags %>"/>
+    </div>
+    <% }); %>
+</form>
+
+<%- include parts/tagScript.ejs %>
 </body>
 </html>

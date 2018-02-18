@@ -21,6 +21,10 @@ app.listen(5000, function () {
     console.log('listening on port 5000');
 });
 
+app.get('/', function (req, res) {
+    res.render("index");
+});
+
 app.get('/docs/', function (req, res) {
     res.sendFile(__dirname + "/" + "docs/index.html");
 });
@@ -157,7 +161,27 @@ app.post('/edit', function (req, res) {
     }
     json.images = images;
     updateJson(json, json_path);
-    res.render("edit", {images: images});
+    res.redirect('back');
+});
+
+
+////////////////
+//// REMOVE ////
+////////////////
+
+app.post('/remove', function(req, res){
+   var ids = req.body["ids[]"];
+   json.freeIds = json.freeIds.concat(ids);
+   json.freeIds.sort();
+   json.count = json.count - ids.length;
+   for (i in ids) {
+       var id = ids[i];
+       var filename = id + json.images[id].extension;
+       // fs.unlinkSync("docs/images/"+filename);
+       delete json.images[id];
+   }
+   updateJson(json, json_path);
+   res.redirect('back');
 });
 
 function readJson(path) {

@@ -6,7 +6,6 @@
 
 <body>
 <h1>File Editor:</h1>
-
 <form action="http://127.0.0.1:5000/edit" method="POST">
     <div>
         <input type="submit" value="Edit"/>
@@ -14,12 +13,31 @@
     <% for (var id in images) {
         var image = images[id]; %>
     <div>
+        <input type="checkbox" data-id="<%= id %>"/>
         <img src="/docs/images/<%= id + image.extension %>"/>
         <input name="<%= id %>" type="tags" id="<%= id %>" value="<%= image.tags %>"/>
     </div>
     <% }; %>
 </form>
+<div id="error"></div>
+<button id="remove">Remove selected</button>
 
+<script>
+    $(function () {
+        $("#remove").click(function () {
+            var ids = [];
+            $("input[type=checkbox]:checked").each(function (item) {
+                ids.push($(this).data("id"));
+            })
+            if (ids.length > 0) {
+                $.post("http://127.0.0.1:5000/remove", {"ids": ids})
+                location.reload();
+            } else {
+                $("#error").append("No items selected");
+            }
+        })
+    })
+</script>
 <%- include parts/tagScript.ejs %>
 </body>
 </html>

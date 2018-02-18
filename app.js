@@ -36,7 +36,11 @@ var storage = multer.diskStorage({
         cb(null, './docs/images')
     },
     filename: function (req, file, cb) {
-        cb(null, json.count + getExtension(file));
+        var id = json.count;
+        if (json.freeIds.length > 0) {
+            id = json.freeIds.shift();
+        }
+        cb(null, id + getExtension(file));
     }
 });
 
@@ -88,18 +92,19 @@ app.post('/upload', function (req, res, next) {
             if (prog.files.fileName) { // fileName comes from input element:   <input type="file" name="fileName">
                 res.writeHead(200, {'Content-Type': 'text/html'});
                 var filename = prog.files.fileName[0].filename.split(".");
+                var id = filename[0];
                 var newVal = {
-                    "id": filename[0],
                     "extension": "." + filename[1],
                     "tags": prog.body.tags.split(",")
                 };
                 res.write("<h1>Uploaded from file</h1><img style='max-width:20%' src='"
                     + prog.files.fileName[0].path + "'/><pre>"
+                    + id
                     + JSON.stringify(newVal, null, 2)
                     + "</pre><a href='/upload'>Another</a>");
                 res.end();
                 json.count++;
-                json.images.push(newVal);
+                json.images[id] = newVal;
                 updateJson(json, json_path);
             }
             else if (prog.body.imageUrl) {
@@ -142,7 +147,7 @@ app.get('/edit', function (req, res) {
     res.render("edit", {images: images});
 });
 
-app.post('/edit', function(req, res){
+app.post('/edit', function (req, res) {
     var updated = req.body;
     var images = json.images;
     for (img in updated) {

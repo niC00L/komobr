@@ -11,12 +11,13 @@
     <div>
         <input type="submit" value="Edit"/>
     </div>
-    <% images.forEach(function(image) { %>
+    <% for (var id in images) {
+        var image = images[id]; %>
     <div>
-        <img src="/docs/images/<%= image.id + image.extension %>"/>
-        <input name="<%= image.id %>" type="tags" id="<%= image.id %>" value="<%= image.tags %>"/>
+        <img src="/docs/images/<%= id + image.extension %>"/>
+        <input name="<%= id %>" type="tags" id="<%= id %>" value="<%= image.tags %>"/>
     </div>
-    <% }); %>
+    <% }; %>
 </form>
 
 <%- include parts/tagScript.ejs %>

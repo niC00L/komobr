@@ -44,6 +44,7 @@ var storage = multer.diskStorage({
         if (json.freeIds.length > 0) {
             id = json.freeIds.shift();
         }
+        json.count++;
         cb(null, id + getExtension(file));
     }
 });
@@ -60,7 +61,7 @@ function getExtension(file) {
 var upload = multer({
     storage: storage,
 }).fields([ // fields to accept multiple types of uploads
-    {name: "fileName", maxCount: 1} // in <input name='fileName' />
+    {name: "fileName"} // in <input name='fileName' />
 ]);
 
 app.get('/upload', function (req, res) {
@@ -93,19 +94,22 @@ app.post('/upload', function (req, res, next) {
             // console.log(req.body); // if using a text field instead of file input, ex. to grab url from another site by path name
 
             if (prog.files.fileName) { // fileName comes from input element:   <input type="file" name="fileName">
-                var filename = prog.files.fileName[0].filename.split(".");
-                var id = filename[0];
-                var newVal = {
-                    "extension": "." + filename[1],
-                    "tags": prog.body.tags.split(",")
-                };
-                json.count++;
-                json.images[id] = newVal;
+                var ids = [];
+                prog.files.fileName.forEach(function (item) {
+                    var filename = item.filename.split(".");
+                    var id = filename[0];
+                    ids.push(id);
+                    var newVal = {
+                        "extension": "." + filename[1],
+                        "tags": prog.body.tags.split(",")
+                    };
+                    json.images[id] = newVal;
+                });
                 updateJson(json, json_path);
                 res.redirect(url.format({
                     pathname: "/edit",
                     query: {
-                        "images": id
+                        "images": ids.toString()
                     }
                 }));
                 res.end();
@@ -150,7 +154,7 @@ app.get('/edit', function (req, res) {
     if (req.query.images) {
         var ids = req.query.images.split(",");
         ids.forEach(function (id) {
-            if (json.images[id]) images[id] = json.images[id]   ;
+            if (json.images[id]) images[id] = json.images[id];
         })
     } else {
         images = json.images;

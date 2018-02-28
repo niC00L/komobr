@@ -10,11 +10,11 @@ Select a file to upload: <br/>
 
 <form action="http://127.0.0.1:5000/upload" method="POST"
       enctype="multipart/form-data">
-    <input type="file" name="fileName"/>
+    <input type="file" name="fileName" multiple/>
     <br/>
     <input name="tags" type="tags" placeholder="tags" id="tags"/>
     <br/>
-    <input type="submit" value="Upload File"/>
+    <input type="submit" value="Upload Files"/>
 </form>
 
 <%- include parts/tagScript.ejs %>

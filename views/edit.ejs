@@ -31,8 +31,10 @@
                 ids.push($(this).data("id"));
             })
             if (ids.length > 0) {
-                $.post("http://127.0.0.1:5000/remove", {"ids": ids})
-                location.reload();
+                if (confirm("Are you sure?")) {
+                    $.post("http://127.0.0.1:5000/remove", {"ids": ids})
+                    location.reload();
+                }
             } else {
                 $("#error").append("No items selected");
             }

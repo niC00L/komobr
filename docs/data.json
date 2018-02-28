@@ -1,41 +1,6 @@
 {
-  "count": 4,
-  "freeIds": [
-    3,
-    4
-  ],
+  "count": 0,
+  "freeIds": [],
   "images": {
-    "0": {
-      "extension": ".png",
-      "tags": [
-        "jezza",
-        "oops",
-        "oh no",
-        "gt"
-      ]
-    },
-    "1": {
-      "extension": ".png",
-      "tags": [
-        "wtf",
-        "srsly",
-        "baby driver"
-      ]
-    },
-    "2": {
-      "extension": ".png",
-      "tags": [
-        "meh",
-        "baby driver"
-      ]
-    },
-    "5": {
-      "extension": ".png",
-      "tags": [
-        "jezza",
-        "jag face",
-        "top gear"
-      ]
-    }
   }
 }

@@ -58,8 +58,24 @@ function getExtension(file) {
     return res;
 }
 
+
+function getUploadedFiles() {
+    var filenames = [];
+    for (id in json.images) {
+        filenames.push(json.images[id].originalname);
+    }
+    return filenames;
+}
+
+
 var upload = multer({
     storage: storage,
+    fileFilter: function (req, file, cb) {
+        if (getUploadedFiles().indexOf(file.originalname) > -1) {
+            cb(null, false);
+        }
+        cb(null, true)
+    }
 }).fields([ // fields to accept multiple types of uploads
     {name: "fileName"} // in <input name='fileName' />
 ]);
@@ -96,11 +112,13 @@ app.post('/upload', function (req, res, next) {
             if (prog.files.fileName) { // fileName comes from input element:   <input type="file" name="fileName">
                 var ids = [];
                 prog.files.fileName.forEach(function (item) {
+                    var originalname = item.originalname;
                     var filename = item.filename.split(".");
                     var id = filename[0];
                     ids.push(id);
                     var newVal = {
                         "extension": "." + filename[1],
+                        "originalname": originalname,
                         "tags": prog.body.tags.split(",")
                     };
                     json.images[id] = newVal;
@@ -189,7 +207,7 @@ app.post('/remove', function (req, res) {
     for (i in ids) {
         var id = ids[i];
         var filename = id + json.images[id].extension;
-        // fs.unlinkSync("docs/images/"+filename);
+        fs.unlinkSync("docs/images/" + filename);
         delete json.images[id];
     }
     updateJson(json, json_path);

@@ -61,7 +61,6 @@ var upload = multer({
     storage: storage,
 }).fields([ // fields to accept multiple types of uploads
     {name: "fileName", maxCount: 1} // in <input name='fileName' />
-    // {tags: "tags"}
 ]);
 
 app.get('/upload', function (req, res) {
@@ -94,22 +93,22 @@ app.post('/upload', function (req, res, next) {
             // console.log(req.body); // if using a text field instead of file input, ex. to grab url from another site by path name
 
             if (prog.files.fileName) { // fileName comes from input element:   <input type="file" name="fileName">
-                res.writeHead(200, {'Content-Type': 'text/html'});
                 var filename = prog.files.fileName[0].filename.split(".");
                 var id = filename[0];
                 var newVal = {
                     "extension": "." + filename[1],
                     "tags": prog.body.tags.split(",")
                 };
-                res.write("<h1>Uploaded from file</h1><img style='max-width:20%' src='"
-                    + prog.files.fileName[0].path + "'/><pre>"
-                    + id
-                    + JSON.stringify(newVal, null, 2)
-                    + "</pre><a href='/upload'>Another</a>");
-                res.end();
                 json.count++;
                 json.images[id] = newVal;
                 updateJson(json, json_path);
+                res.redirect(url.format({
+                    pathname: "/edit",
+                    query: {
+                        "images": id
+                    }
+                }));
+                res.end();
             }
             else if (prog.body.imageUrl) {
 
@@ -147,7 +146,16 @@ app.post('/upload', function (req, res, next) {
 //////////////
 
 app.get('/edit', function (req, res) {
-    var images = json.images;
+    var images = {};
+    if (req.query.images) {
+        var ids = req.query.images.split(",");
+        ids.forEach(function (id) {
+            if (json.images[id]) images[id] = json.images[id]   ;
+        })
+    } else {
+        images = json.images;
+    }
+
     res.render("edit", {images: images});
 });
 
@@ -169,19 +177,19 @@ app.post('/edit', function (req, res) {
 //// REMOVE ////
 ////////////////
 
-app.post('/remove', function(req, res){
-   var ids = req.body["ids[]"];
-   json.freeIds = json.freeIds.concat(ids);
-   json.freeIds.sort();
-   json.count = json.count - ids.length;
-   for (i in ids) {
-       var id = ids[i];
-       var filename = id + json.images[id].extension;
-       // fs.unlinkSync("docs/images/"+filename);
-       delete json.images[id];
-   }
-   updateJson(json, json_path);
-   res.redirect('back');
+app.post('/remove', function (req, res) {
+    var ids = req.body["ids[]"];
+    json.freeIds = json.freeIds.concat(ids);
+    json.freeIds.sort();
+    json.count = json.count - ids.length;
+    for (i in ids) {
+        var id = ids[i];
+        var filename = id + json.images[id].extension;
+        // fs.unlinkSync("docs/images/"+filename);
+        delete json.images[id];
+    }
+    updateJson(json, json_path);
+    res.redirect('back');
 });
 
 function readJson(path) {

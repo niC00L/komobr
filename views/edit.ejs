@@ -10,14 +10,15 @@
     <div>
         <input type="submit" value="Edit"/>
     </div>
-    <% for (var id in images) {
-        var image = images[id]; %>
+    <% Object.keys(images).forEach(function(id){
+        var image = images[id];
+    %>
     <div>
         <input type="checkbox" data-id="<%= id %>"/>
         <img src="/docs/images/<%= id + image.extension %>"/>
         <input name="<%= id %>" type="tags" id="<%= id %>" value="<%= image.tags %>"/>
     </div>
-    <% }; %>
+    <% }); %>
 </form>
 <div id="error"></div>
 <button id="remove">Remove selected</button>

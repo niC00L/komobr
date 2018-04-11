@@ -7,7 +7,8 @@
     "doc": "docs"
   },
   "scripts": {
-    "run": "forever -w app.js"
+    "run": "forever -w app.js",
+    "app": "app.js"
   },
   "repository": {
     "type": "git",
@@ -26,6 +27,7 @@
     "multer": "^1.3.0",
     "progress-stream": "^2.0.0",
     "request": "^2.83.0",
+    "sharp": "^0.19.1",
     "tags-input": "^1.1.1"
   }
 }

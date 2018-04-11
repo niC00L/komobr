@@ -8,10 +8,12 @@ var multer = require('multer');
 var path = require('path');
 var request = require('request');
 var url = require('url');
-var progress = require('progress-stream');
+// var reqress = require('reqress-stream');
 
 var json_path = 'docs/data.json';
 var json = readJson(json_path);
+var img_path = 'docs/images/';
+var sharp = require('sharp');
 
 app.use(express.static('.'));
 app.use(bodyParser.urlencoded({extended: false}));
@@ -37,7 +39,7 @@ app.get('/docs/', function (req, res) {
 // storage used with Multer library to define where to save files on server, and how to save filename
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, './docs/images')
+        cb(null, img_path)
     },
     filename: function (req, file, cb) {
         var id = json.count;
@@ -58,7 +60,6 @@ function getExtension(file) {
     return res;
 }
 
-
 function getUploadedFiles() {
     var filenames = [];
     for (id in json.images) {
@@ -66,7 +67,6 @@ function getUploadedFiles() {
     }
     return filenames;
 }
-
 
 var upload = multer({
     storage: storage,
@@ -85,20 +85,7 @@ app.get('/upload', function (req, res) {
 });
 
 app.post('/upload', function (req, res, next) {
-
-    var prog = progress({time: 100}, function (progress) { // time:100 means will check progress every 100 ms, say to update progress bar
-        // NOTE may need to increase accepted file size to see any kind of progress, might be too fast
-        var len = this.headers['content-length'];
-        var transf = progress.transferred;
-        var result = Math.round(transf / len * 100) + '%';
-        console.log(result); // writes progress to console. does not work with images from internet, only file uploads
-        //if (result != '100%') res.send(result)
-    });
-
-    req.pipe(prog);
-    prog.headers = req.headers;
-
-    upload(prog, res, function (err) { // changed req to prog in order to track % upload progress
+    upload(req, res, function (err) { // changed req to req in order to track % upload reqress
         if (err) {
             res.status(err.status || 500).json({"error": {"status_code": err.status || 500, "message": err.code}});
             return;
@@ -109,18 +96,27 @@ app.post('/upload', function (req, res, next) {
             // console.log(req.files); // if using upload.fields([]); // array of input field names
             // console.log(req.body); // if using a text field instead of file input, ex. to grab url from another site by path name
 
-            if (prog.files.fileName) { // fileName comes from input element:   <input type="file" name="fileName">
+            if (req.files.fileName) { // fileName comes from input element:   <input type="file" name="fileName">
                 var ids = [];
-                prog.files.fileName.forEach(function (item) {
+                req.files.fileName.forEach(function (item) {
+                    console.log(item);
                     var originalname = item.originalname;
                     var filename = item.filename.split(".");
                     var id = filename[0];
+                    var extension = filename[1];
                     ids.push(id);
                     var newVal = {
-                        "extension": "." + filename[1],
+                        "extension": "." + extension,
                         "originalname": originalname,
-                        "tags": prog.body.tags.split(",")
+                        "tags": req.body.tags.split(",")
                     };
+                    if (extension === "gif") {
+                        newVal.tags.push("gif");
+                    } else {
+                        sharp(item.path).resize(300,300).max().toFile(img_path + "resized/" + filename, function (err) {
+                            console.log(err);
+                        });
+                    }
                     json.images[id] = newVal;
                 });
                 updateJson(json, json_path);
@@ -132,7 +128,7 @@ app.post('/upload', function (req, res, next) {
                 }));
                 res.end();
             }
-            else if (prog.body.imageUrl) {
+            else if (req.body.imageUrl) {
 
                 // the text field was used, so process the input type=text with regular node/express
                 var download = function (uri, filename, callback) {
@@ -144,16 +140,18 @@ app.post('/upload', function (req, res, next) {
                 };
 
                 // this is only available when submitting a text url, not by choosing file to upload
-                var urlParsed = url.parse(prog.body.imageUrl);
+                var urlParsed = url.parse(req.body.imageUrl);
                 if (urlParsed.pathname) {
-                    var onlyTheFilename = urlParsed.pathname ? urlParsed.pathname.substring(urlParsed.pathname.lastIndexOf('/') + 1).replace(/((\?|#).*)?$/, '') : '';
+                    var onlyTheFilename = urlParsed.pathname ? urlParsed.pathname
+                        .substring(urlParsed.pathname.lastIndexOf('/') + 1).replace(/((\?|#).*)?$/, '') : '';
                     //console.log(urlParsed)
                     var newFilename = onlyTheFilename + '-' + Date.now() + '-' + onlyTheFilename
                     var wholePath = 'uploads/' + newFilename;
                     download(urlParsed.href, newFilename, function () {
                         var reqJSON = JSON.stringify(wholePath, null, 2); // pretty print
-                        res.end("<h1>Uploaded from URL</h2><img style='max-width:50%' src='" + wholePath + "'/><pre>" + reqJSON + "</pre><a href='/'>Go back</a>")
-                        console.log("wholePath")
+                        res.end("<h1>Uploaded from URL</h2><img style='max-width:50%' src='" + wholePath + "'/><pre>" +
+                            reqJSON + "</pre><a href='/'>Go back</a>");
+                        console.log("wholePath");
                         console.log(wholePath)
                     });
                 }
@@ -207,7 +205,7 @@ app.post('/remove', function (req, res) {
     for (i in ids) {
         var id = ids[i];
         var filename = id + json.images[id].extension;
-        fs.unlinkSync("docs/images/" + filename);
+        fs.unlinkSync(img_path + filename);
         delete json.images[id];
     }
     updateJson(json, json_path);

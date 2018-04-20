@@ -1,6 +1,29 @@
 {
-  "count": 0,
-  "freeIds": [],
+  "count": 1,
+  "freeIds": [
+    "0"
+  ],
   "images": {
+    "1": {
+      "extension": ".jpg",
+      "originalname": "1.jpg",
+      "tags": [
+        "test",
+        "vela",
+        "tagov",
+        "tu",
+        "dam",
+        "aby",
+        "som",
+        "videla",
+        "ako",
+        "to",
+        "bude",
+        "vyzerat",
+        "ked",
+        "bud",
+        "riadkov"
+      ]
+    }
   }
 }

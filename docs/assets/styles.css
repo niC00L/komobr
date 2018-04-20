@@ -1,0 +1,15 @@
+.brand h1 {
+    font-size: 4.2rem;
+    font-weight: 600;
+    text-align: center;
+}
+.brand h3 {
+    font-size: 1.313rem;
+    max-width: 500px;
+    margin: 10px auto 0;
+    text-align: center;
+}
+
+.header-xs {
+    height: 380px;
+}

@@ -1,22 +1,35 @@
 <html>
 <head>
     <%- include parts/head.ejs %>
-    <title>File Uploading Form</title>
+    <title>Upload</title>
 </head>
 
 <body>
-<h1>File Upload:</h1>
-Select a file to upload: <br/>
+<%- include parts/nav.ejs %>
+<div class="page-header header-filter header-xs" data-parallax="true"
+     style="background-image: url('/docs/assets/background.jpg');">
+</div>
+<div class="main main-raised">
+    <div class="section section-basic">
+        <div class="container">
+            <div class="title">
+                <h1>File Upload</h1>
+            </div>
+            Select files to upload <br/>
 
-<form action="http://127.0.0.1:5000/upload" method="POST"
-      enctype="multipart/form-data">
-    <input type="file" name="fileName" multiple/>
-    <br/>
-    <input name="tags" type="tags" placeholder="tags" id="tags"/>
-    <br/>
-    <input type="submit" value="Upload Files"/>
-</form>
-
+            <form action="http://127.0.0.1:5000/upload" method="POST"
+                  enctype="multipart/form-data">
+                <input type="file" class="btn btn-info" name="fileName" multiple/>
+                <br/>
+                <input name="tags" class="form-control" type="tags" placeholder="tags" id="tags"/>
+                <br/>
+                <input type="submit" class="btn btn-info" value="Upload Files"/>
+            </form>
+        </div>
+    </div>
+</div>
+<%- include parts/footer.ejs %>
+<%- include parts/scripts.ejs %>
 <%- include parts/tagScript.ejs %>
 </body>
 </html>

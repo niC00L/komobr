@@ -99,7 +99,6 @@ app.post('/upload', function (req, res, next) {
             if (req.files.fileName) { // fileName comes from input element:   <input type="file" name="fileName">
                 var ids = [];
                 req.files.fileName.forEach(function (item) {
-                    console.log(item);
                     var originalname = item.originalname;
                     var filename = item.filename.split(".");
                     var id = filename[0];
@@ -113,7 +112,7 @@ app.post('/upload', function (req, res, next) {
                     if (extension === "gif") {
                         newVal.tags.push("gif");
                     } else {
-                        sharp(item.path).resize(300,300).max().toFile(img_path + "resized/" + filename, function (err) {
+                        sharp(item.path).resize(300,300).max().toFile(img_path + "resized/" + item.filename, function (err) {
                             console.log(err);
                         });
                     }

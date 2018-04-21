@@ -21,32 +21,32 @@
                 <div>
                     <input type="submit" class="btn btn-info" value="Edit"/>
                 </div>
+                <div class="row">
                 <% Object.keys(images).forEach(function(id){
                     var image = images[id];
                     var resize = "";
                 %>
-                <div>
-                    <% if (image.extension == "gif") {
+                <div class="col-md-4">
+                    <% if (image.extension == ".gif") {
                         resize = ""
                     }
                     else {
                         resize = "resized/";
                     }
                     %>
-                    <div class="col-md-4">
-                        <div class="form-check">
-                            <label class="form-check-label">
-                                <input type="checkbox" class="form-check-input" data-id="<%= id %>"/>
-                                Obrazok nemoze byt label?
-                                <span class="form-check-sign"><span class="check"></span></span>
-                            </label>
-                            <img class='img-raised rounded img-fluid'
-                                     src="/docs/images/<%= resize + id + image.extension %>"/>
-                        </div>
-                        <input name="<%= id %>" type="tags" id="<%= id %>" value="<%= image.tags %>"/>
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input type="checkbox" class="form-check-input" data-id="<%= id %>"/>
+                            Obrazok nemoze byt label?
+                            <span class="form-check-sign"><span class="check"></span></span>
+                        </label>
+                        <img class='img-raised rounded img-fluid'
+                             src="/docs/images/<%= resize + id + image.extension %>"/>
                     </div>
+                    <input name="<%= id %>" type="tags" id="<%= id %>" value="<%= image.tags %>"/>
                 </div>
                 <% }); %>
+                    </div>
             </form>
             <div id="error"></div>
             <button id="remove" class="btn btn-info">Remove selected</button>

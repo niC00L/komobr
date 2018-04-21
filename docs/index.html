@@ -32,7 +32,7 @@
             </button>
         </div>
         <div class="collapse navbar-collapse">
-            <form class="form-inline ml-auto">
+            <form class="form-inline ml-auto" style="display:none">
                 <div class="form-group has-white bmd-form-group">
                     <input type="text" class="form-control" placeholder="Search">
                 </div>
@@ -53,7 +53,7 @@
                 <h1>KomObr</h1>
             </div>
             <form id="target" action="destination.html">
-                <input type="text" class="form-control" value="">
+                <input type="text" class="form-control" value="" id="keyword">
                 <input type="submit" class="btn btn-info" value="Filter">
             </form>
             <div id="komobr" class="row">
@@ -99,13 +99,12 @@
         });
     }
 
-    // <span class="badge badge-secondary">Default</span>
-
     filter("");
 
     $(document).ready(function () {
         $("#target").submit(function (event) {
-            keyword = $("input:first").val()
+            let keyword = $("#keyword").val();
+            console.log(keyword);
             event.preventDefault();
             filter(keyword);
         });
